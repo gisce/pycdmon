@@ -8,6 +8,7 @@ from typing import Any
 
 from .client import CdmonDomainsClient
 from .errors import CdmonApiError, CdmonTransportError
+from .types import DnsRecord
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -128,7 +129,7 @@ def main(argv: list[str] | None = None) -> int:
             elif args.command == "dns-records":
                 _print_json(client.get_dns_records(args.domain))
             elif args.command == "dns-create":
-                record: dict[str, Any] = {
+                record: DnsRecord = {
                     "host": args.host,
                     "type": args.type_,
                     "ttl": args.ttl,
