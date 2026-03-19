@@ -260,8 +260,148 @@ class AsyncCdmonDomainsClient:
 
         return body
 
+    # Generic
+    async def status(self, action: str) -> JsonDict:
+        return await self._post("status", {"action": action})
+
+    # Domains
     async def check(self, domain: str) -> JsonDict:
         return await self._post("check", {"domain": domain})
+
+    async def info(self, domain: str, authcode: str | None = None) -> JsonDict:
+        data: JsonDict = {"domain": domain}
+        if authcode:
+            data["authcode"] = authcode
+        return await self._post("info", data)
+
+    async def authcode(self, domain: str) -> JsonDict:
+        return await self._post("authcode", {"domain": domain, "action": "get"})
+
+    async def list_domains(self, *, extended_info: bool = True) -> JsonDict:
+        return await self._post("domains/list", {"extended_info": 1 if extended_info else 0})
+
+    async def register(
+        self,
+        domain: str,
+        period: int,
+        intended_use: str,
+        contact: JsonDict,
+    ) -> JsonDict:
+        return await self._post(
+            "register",
+            {
+                "domain": domain,
+                "period": period,
+                "intended_use": intended_use,
+                "contact": contact,
+            },
+        )
+
+    async def renew(self, domain: str, period: int) -> JsonDict:
+        return await self._post("renew", {"domain": domain, "period": str(period)})
+
+    async def transfer(self, domain: str, authcode: str) -> JsonDict:
+        return await self._post("transfer", {"domain": domain, "authcode": authcode})
+
+    async def restore(self, domain: str) -> JsonDict:
+        return await self._post("restore", {"domain": domain, "action": "restore"})
+
+    # Contact / privacy / domain options
+    async def set_block(self, domain: str, enabled: bool) -> JsonDict:
+        return await self._post(
+            "block", {"domain": domain, "action": "block" if enabled else "unblock"}
+        )
+
+    async def set_whois_private(self, domain: str, enabled: bool) -> JsonDict:
+        return await self._post(
+            "whoisprivate",
+            {"domain": domain, "action": "enable" if enabled else "disable"},
+        )
+
+    async def set_dnssec(self, domain: str, enabled: bool) -> JsonDict:
+        return await self._post(
+            "dnssec",
+            {"domain": domain, "action": "enable" if enabled else "disable"},
+        )
+
+    async def modify_contact(self, payload: ContactModifyPayload) -> JsonDict:
+        return await self._post("contacts/modify", dict(payload))
+
+    # DNS
+    async def set_nameservers(self, domain: str, nameservers: DnsNameservers) -> JsonDict:
+        return await self._post("dns", {"domain": domain, "ns": dict(nameservers)})
+
+    async def get_dns_records(self, domain: str) -> JsonDict:
+        return await self._post("getDnsRecords", {"domain": domain})
+
+    async def create_dns_record(self, domain: str, record: DnsRecord) -> JsonDict:
+        return await self._post("dnsrecords/create", {"domain": domain, **dict(record)})
+
+    async def edit_dns_record(self, domain: str, current: JsonDict, new: JsonDict) -> JsonDict:
+        return await self._post(
+            "dnsrecords/edit",
+            {"domain": domain, "current": current, "new": new},
+        )
+
+    async def delete_dns_record(self, domain: str, *, host: str, type_: str) -> JsonDict:
+        return await self._post(
+            "dnsrecords/delete",
+            {"domain": domain, "host": host, "type": type_},
+        )
+
+    async def send_dns_key(
+        self,
+        domain: str,
+        *,
+        key_type: str,
+        algorithm: int,
+        flags: int,
+        pubkey: str,
+        digest_type: int | None = None,
+        digest: str | None = None,
+    ) -> JsonDict:
+        data: JsonDict = {
+            "domain": domain,
+            "type": key_type,
+            "algorithm": algorithm,
+            "flags": flags,
+            "pubKey": pubkey,
+        }
+        if digest_type is not None:
+            data["digestType"] = digest_type
+        if digest is not None:
+            data["digest"] = digest
+        return await self._post("sendDnsKey", data)
+
+    # Billing
+    async def get_price(self, tld: str, action: str) -> JsonDict:
+        return await self._post("getPrice", {"tld": tld, "action": action})
+
+    async def get_periods(self, tld: str, action: str) -> JsonDict:
+        return await self._post("getPeriods", {"tld": tld, "action": action})
+
+    async def balance(self) -> JsonDict:
+        return await self._post("balance")
+
+    # Auto renewal
+    async def get_autorenewal(self, domain: str) -> JsonDict:
+        return await self._post("autorenewal", {"domain": domain})
+
+    async def manage_autorenewal(
+        self,
+        domain: str,
+        *,
+        enabled: bool,
+        payment_method: str = "card",
+    ) -> JsonDict:
+        return await self._post(
+            "autorenewal/manage",
+            {
+                "domain": domain,
+                "action": "enable" if enabled else "disable",
+                "payment_method": payment_method,
+            },
+        )
 
 
 def _extract_error_message(body: JsonDict) -> str:
