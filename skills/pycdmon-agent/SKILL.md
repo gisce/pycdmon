@@ -90,8 +90,11 @@ cdmon balance
 
 ## 7) Keep agent guidance aligned with repo capabilities
 
-When pycdmon CLI or supported operations change, update this skill so it always matches:
+When pycdmon CLI, supported operations, or release workflow change, update this skill so it always matches:
 
 - `README.md`
 - available `cdmon` commands
 - service workflows currently supported by the SDK/CLI
+- release and versioning workflow documentation
+- optional PyPI publishing behavior when `PYPI_TOKEN` or fallback `PYPI_MASTER_TOKEN` is configured
+- Python Semantic Release configuration in `pyproject.toml`

@@ -108,6 +108,56 @@ Suggested autonomous loop for agents:
 3. Run `ruff check . && pytest`
 4. Keep commits small and descriptive
 
+## Releases
+
+This repository supports automatic releases from `main` using **Python Semantic Release** and Conventional Commits.
+
+### Why this approach
+
+This is a Python package, so the release automation is now Python-native:
+
+- no `package.json`
+- no Node-based `semantic-release`
+- versioning is configured in `pyproject.toml`
+- the workflow uses `python-semantic-release`, `build`, and optional `twine`
+
+Conventional Commits are still used, but they are only the **input convention** for deciding the version bump. They do not imply a Node/npm release stack.
+
+### How it works
+
+- merge changes into `main`
+- GitHub Actions runs validation (`ruff check .` and `pytest`)
+- `python-semantic-release` inspects commit messages since the last tag
+- if a release is warranted, it will:
+  - determine the next version
+  - update `pyproject.toml`
+  - create the release commit and tag
+  - publish the GitHub Release
+- if `PYPI_TOKEN` is defined in repository secrets, the workflow also publishes to PyPI
+- if `PYPI_TOKEN` is not defined but `PYPI_MASTER_TOKEN` exists, the workflow falls back to that token for PyPI publication
+
+### Commit conventions
+
+Use Conventional Commits so release automation can infer version bumps:
+
+- `fix:` -> patch release
+- `feat:` -> minor release
+- `feat!:` or any commit with `BREAKING CHANGE:` -> major release
+- `docs:`, `test:`, `chore:` -> no release by default
+
+Example:
+
+```bash
+git commit -m "fix: handle TXT DNS records with value field"
+```
+
+### Notes
+
+- The release workflow only runs on pushes to `main`.
+- The repository must allow GitHub Actions to push release commits and tags using `GITHUB_TOKEN`.
+- If branch protection is strict, make sure it still permits the release workflow to push the generated release commit.
+- If neither `PYPI_TOKEN` nor `PYPI_MASTER_TOKEN` is present, the workflow still creates the Git tag and GitHub Release and skips the PyPI upload.
+
 ## API reference source
 
 Based on cdmon official API docs:
