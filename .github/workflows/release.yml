@@ -44,10 +44,12 @@ jobs:
             echo "::add-mask::${PYPI_TOKEN}"
           fi
           semantic-release version
-          if ls dist/* >/dev/null 2>&1; then
+          if ls dist/*.whl dist/*.tar.gz >/dev/null 2>&1; then
             semantic-release publish
             if [ -n "${PYPI_TOKEN}" ]; then
-              TWINE_USERNAME=__token__ TWINE_PASSWORD="${PYPI_TOKEN}" twine upload --non-interactive dist/*
+              export TWINE_USERNAME=__token__
+              export TWINE_PASSWORD="${PYPI_TOKEN}"
+              twine upload --non-interactive dist/*
             else
               echo "No PyPI token configured; skipping PyPI publish"
             fi
