@@ -156,7 +156,7 @@ git commit -m "fix: handle TXT DNS records with value field"
 - The release workflow only runs on pushes to `main`.
 - The repository must allow GitHub Actions to push release commits and tags using `GITHUB_TOKEN`.
 - If branch protection is strict, make sure it still permits the release workflow to push the generated release commit.
-- If neither `PYPI_TOKEN` nor `PYPI_MASTER_TOKEN` is present, the workflow still creates the Git tag and GitHub Release and skips only the PyPI upload.
+- If neither `PYPI_TOKEN` nor `PYPI_MASTER_TOKEN` is present, the workflow still creates the Git tag and GitHub Release and skips the PyPI upload.
 
 ## API reference source
 

@@ -41,7 +41,7 @@ build_command = "python -m build"
 dist_path = "dist/"
 upload_to_vcs_release = true
 major_on_zero = false
-commit_message = "chore(release): {version} [skip ci]"
+commit_message = "chore(release): {version}"
 commit_parser = "conventional"
 
 [tool.semantic_release.remote]
