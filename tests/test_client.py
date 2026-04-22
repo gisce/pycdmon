@@ -68,3 +68,28 @@ def test_http_error_raises_api_error() -> None:
 
     assert exc.value.status_code == 403
     assert "forbidden" in exc.value.message
+
+
+def test_create_txt_record_uses_value_field() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/dnsrecords/create"):
+            payload = request.read().decode()
+            assert '"type":"TXT"' in payload
+            assert '"value":"probe-openclaw"' in payload
+            assert '"destination"' not in payload
+            return httpx.Response(200, json={"status": "ok", "data": "Record added successfully"})
+        return httpx.Response(200, json={"status": "ok", "data": {"msg": "ok"}})
+
+    client = httpx.Client(
+        base_url="https://api-domains.cdmon.services/api-domains/",
+        headers={"apikey": "x", "Accept": "application/json", "Content-Type": "application/json"},
+        transport=httpx.MockTransport(handler),
+    )
+
+    sdk = CdmonDomainsClient(api_key="x", client=client)
+    response = sdk.create_dns_record(
+        "example.com",
+        {"host": "@", "type": "TXT", "ttl": 900, "destination": "probe-openclaw"},
+    )
+
+    assert response["status"] == "ok"

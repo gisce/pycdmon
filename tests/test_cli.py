@@ -74,3 +74,32 @@ def test_cli_dns_create(monkeypatch, capsys) -> None:
     payload = json.loads(out)
     assert payload["data"]["record"]["host"] == "@"
     assert payload["data"]["record"]["ttl"] == 600
+    assert payload["data"]["record"]["destination"] == "1.2.3.4"
+
+
+def test_cli_dns_create_txt_uses_value(monkeypatch, capsys) -> None:
+    monkeypatch.setenv("CDMON_API_KEY", "k")
+    monkeypatch.setattr(cli, "CdmonDomainsClient", FakeClient)
+
+    code = cli.main(
+        [
+            "dns-create",
+            "example.com",
+            "--host",
+            "@",
+            "--type",
+            "TXT",
+            "--destination",
+            "probe-openclaw",
+            "--ttl",
+            "600",
+        ]
+    )
+
+    assert code == 0
+    out = capsys.readouterr().out
+    payload = json.loads(out)
+    assert payload["data"]["record"]["host"] == "@"
+    assert payload["data"]["record"]["ttl"] == 600
+    assert payload["data"]["record"]["value"] == "probe-openclaw"
+    assert "destination" not in payload["data"]["record"]
