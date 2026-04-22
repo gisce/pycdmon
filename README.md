@@ -108,6 +108,44 @@ Suggested autonomous loop for agents:
 3. Run `ruff check . && pytest`
 4. Keep commits small and descriptive
 
+## Releases
+
+This repository supports automatic releases from `main` using semantic-release and Conventional Commits.
+
+### How it works
+
+- merge changes into `main`
+- GitHub Actions runs validation (`ruff check .` and `pytest`)
+- semantic-release inspects commit messages since the last tag
+- if a release is warranted, it will:
+  - determine the next version
+  - update `pyproject.toml`
+  - update `CHANGELOG.md`
+  - create a release commit on `main`
+  - create the Git tag
+  - publish the GitHub Release
+
+### Commit conventions
+
+Use Conventional Commits so release automation can infer version bumps:
+
+- `fix:` -> patch release
+- `feat:` -> minor release
+- `feat!:` or any commit with `BREAKING CHANGE:` -> major release
+- `docs:`, `test:`, `chore:` -> no release by default
+
+Example:
+
+```bash
+git commit -m "fix: handle TXT DNS records with value field"
+```
+
+### Notes
+
+- The release workflow only runs on pushes to `main`.
+- The repository must allow GitHub Actions to push release commits and tags using `GITHUB_TOKEN`.
+- If branch protection is strict, make sure it still permits the release workflow to push the generated release commit.
+
 ## API reference source
 
 Based on cdmon official API docs:
