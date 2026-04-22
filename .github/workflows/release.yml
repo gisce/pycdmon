@@ -37,10 +37,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          PYPI_MASTER_TOKEN: ${{ secrets.PYPI_MASTER_TOKEN }}
         run: |
-          if [ -n "${PYPI_TOKEN}" ]; then
-            semantic-release version
-            semantic-release publish
-          else
-            semantic-release version
-          fi
+          export PYPI_TOKEN="${PYPI_TOKEN:-${PYPI_MASTER_TOKEN:-}}"
+          semantic-release version
+          semantic-release publish
