@@ -134,6 +134,7 @@ Conventional Commits are still used, but they are only the **input convention** 
   - create the release commit and tag
   - publish the GitHub Release
 - if `PYPI_TOKEN` is defined in repository secrets, the workflow also publishes to PyPI
+- if `PYPI_TOKEN` is not defined but `PYPI_MASTER_TOKEN` exists, the workflow falls back to that token for PyPI publication
 
 ### Commit conventions
 
@@ -155,7 +156,7 @@ git commit -m "fix: handle TXT DNS records with value field"
 - The release workflow only runs on pushes to `main`.
 - The repository must allow GitHub Actions to push release commits and tags using `GITHUB_TOKEN`.
 - If branch protection is strict, make sure it still permits the release workflow to push the generated release commit.
-- If `PYPI_TOKEN` is not present, the workflow skips PyPI publication cleanly.
+- If neither `PYPI_TOKEN` nor `PYPI_MASTER_TOKEN` is present, the workflow still creates the Git tag and GitHub Release and skips only the PyPI upload.
 
 ## API reference source
 
