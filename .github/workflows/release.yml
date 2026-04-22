@@ -40,8 +40,11 @@ jobs:
           PYPI_MASTER_TOKEN: ${{ secrets.PYPI_MASTER_TOKEN }}
         run: |
           export PYPI_TOKEN="${PYPI_TOKEN:-${PYPI_MASTER_TOKEN:-}}"
+          if [ -n "${PYPI_TOKEN}" ]; then
+            echo "::add-mask::${PYPI_TOKEN}"
+          fi
           semantic-release version
-          if compgen -G "dist/*" > /dev/null; then
+          if ls dist/* >/dev/null 2>&1; then
             semantic-release publish
             if [ -n "${PYPI_TOKEN}" ]; then
               TWINE_USERNAME=__token__ TWINE_PASSWORD="${PYPI_TOKEN}" twine upload --non-interactive dist/*
