@@ -110,20 +110,30 @@ Suggested autonomous loop for agents:
 
 ## Releases
 
-This repository supports automatic releases from `main` using semantic-release and Conventional Commits.
+This repository supports automatic releases from `main` using **Python Semantic Release** and Conventional Commits.
+
+### Why this approach
+
+This is a Python package, so the release automation is now Python-native:
+
+- no `package.json`
+- no Node-based `semantic-release`
+- versioning is configured in `pyproject.toml`
+- the workflow uses `python-semantic-release`, `build`, and optional `twine`
+
+Conventional Commits are still used, but they are only the **input convention** for deciding the version bump. They do not imply a Node/npm release stack.
 
 ### How it works
 
 - merge changes into `main`
 - GitHub Actions runs validation (`ruff check .` and `pytest`)
-- semantic-release inspects commit messages since the last tag
+- `python-semantic-release` inspects commit messages since the last tag
 - if a release is warranted, it will:
   - determine the next version
   - update `pyproject.toml`
-  - update `CHANGELOG.md`
-  - create a release commit on `main`
-  - create the Git tag
+  - create the release commit and tag
   - publish the GitHub Release
+- if `PYPI_TOKEN` is defined in repository secrets, the workflow also publishes to PyPI
 
 ### Commit conventions
 
@@ -145,8 +155,7 @@ git commit -m "fix: handle TXT DNS records with value field"
 - The release workflow only runs on pushes to `main`.
 - The repository must allow GitHub Actions to push release commits and tags using `GITHUB_TOKEN`.
 - If branch protection is strict, make sure it still permits the release workflow to push the generated release commit.
-- If the repository defines a `PYPI_TOKEN` secret, the workflow will also upload the built package to PyPI.
-- If `PYPI_TOKEN` is not present, the workflow still creates the version commit, tag, changelog, and GitHub Release without attempting a PyPI publish.
+- If `PYPI_TOKEN` is not present, the workflow skips PyPI publication cleanly.
 
 ## API reference source
 

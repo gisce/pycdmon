@@ -97,3 +97,4 @@ When pycdmon CLI, supported operations, or release workflow change, update this 
 - service workflows currently supported by the SDK/CLI
 - release and versioning workflow documentation
 - optional PyPI publishing behavior when the repository secret is configured
+- Python Semantic Release configuration in `pyproject.toml`
