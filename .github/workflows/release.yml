@@ -44,13 +44,13 @@ jobs:
             echo "::add-mask::${PYPI_TOKEN}"
           fi
           semantic-release version
-          mapfile -t DIST_FILES < <(find dist -maxdepth 1 -type f \( -name "*.whl" -o -name "*.tar.gz" \))
+          mapfile -t DIST_FILES < <(find dist -maxdepth 1 -type f \( -name "*.whl" -o -name "*.tar.gz" \) 2>/dev/null || true)
           if [ "${#DIST_FILES[@]}" -gt 0 ]; then
             semantic-release publish
             if [ -n "${PYPI_TOKEN}" ]; then
               export TWINE_USERNAME=__token__
               export TWINE_PASSWORD="${PYPI_TOKEN}"
-              twine upload --non-interactive "${DIST_FILES[@]}"
+              twine upload --non-interactive --skip-existing "${DIST_FILES[@]}"
             else
               echo "No PyPI token configured; skipping PyPI publish"
             fi
