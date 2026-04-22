@@ -40,9 +40,21 @@ jobs:
           PYPI_MASTER_TOKEN: ${{ secrets.PYPI_MASTER_TOKEN }}
         run: |
           export PYPI_TOKEN="${PYPI_TOKEN:-${PYPI_MASTER_TOKEN:-}}"
-          semantic-release version
           if [ -n "${PYPI_TOKEN}" ]; then
+            echo "::add-mask::${PYPI_TOKEN}"
+          fi
+          semantic-release version
+          python -m build
+          mapfile -t DIST_FILES < <(find dist -maxdepth 1 -type f \( -name "*.whl" -o -name "*.tar.gz" \) 2>/dev/null || true)
+          if [ "${#DIST_FILES[@]}" -gt 0 ]; then
             semantic-release publish
+            if [ -n "${PYPI_TOKEN}" ]; then
+              export TWINE_USERNAME=__token__
+              export TWINE_PASSWORD="${PYPI_TOKEN}"
+              twine upload --non-interactive --skip-existing "${DIST_FILES[@]}"
+            else
+              echo "No PyPI token configured; skipping PyPI publish"
+            fi
           else
-            echo "No PyPI token configured; skipping PyPI publish"
+            echo "No distributions found in dist/; skipping publish steps"
           fi
