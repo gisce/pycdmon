@@ -36,6 +36,7 @@ class DnsRecord(TypedDict, total=False):
     type: str
     ttl: int
     destination: str
+    value: str
     priority: int
 
 

@@ -132,7 +132,7 @@ def main(argv: list[str] | None = None) -> int:
                     "host": args.host,
                     "type": args.type_,
                     "ttl": args.ttl,
-                    "destination": args.destination,
+                    "value" if args.type_.upper() == "TXT" else "destination": args.destination,
                 }
                 if args.priority is not None:
                     record["priority"] = args.priority

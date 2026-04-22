@@ -142,7 +142,10 @@ class CdmonDomainsClient:
         return self._post("getDnsRecords", {"domain": domain})
 
     def create_dns_record(self, domain: str, record: DnsRecord) -> JsonDict:
-        return self._post("dnsrecords/create", {"domain": domain, **dict(record)})
+        payload = dict(record)
+        if payload.get("type") == "TXT" and "value" not in payload and "destination" in payload:
+            payload["value"] = payload.pop("destination")
+        return self._post("dnsrecords/create", {"domain": domain, **payload})
 
     def edit_dns_record(self, domain: str, current: JsonDict, new: JsonDict) -> JsonDict:
         return self._post("dnsrecords/edit", {"domain": domain, "current": current, "new": new})
