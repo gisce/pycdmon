@@ -44,7 +44,7 @@ jobs:
           if compgen -G "dist/*" > /dev/null; then
             semantic-release publish
             if [ -n "${PYPI_TOKEN}" ]; then
-              twine upload --non-interactive -u __token__ -p "${PYPI_TOKEN}" dist/*
+              TWINE_USERNAME=__token__ TWINE_PASSWORD="${PYPI_TOKEN}" twine upload --non-interactive dist/*
             else
               echo "No PyPI token configured; skipping PyPI publish"
             fi
