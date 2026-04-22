@@ -50,7 +50,7 @@ type = "github"
 
 [tool.semantic_release.publish]
 dist_glob_patterns = ["dist/*"]
-upload_to_pypi = true
+upload_to_pypi = false
 
 [project.urls]
 Homepage = "https://github.com/pilipilis/pycdmon"

@@ -44,6 +44,7 @@ jobs:
             echo "::add-mask::${PYPI_TOKEN}"
           fi
           semantic-release version
+          python -m build
           mapfile -t DIST_FILES < <(find dist -maxdepth 1 -type f \( -name "*.whl" -o -name "*.tar.gz" \) 2>/dev/null || true)
           if [ "${#DIST_FILES[@]}" -gt 0 ]; then
             semantic-release publish
