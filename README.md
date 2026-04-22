@@ -133,7 +133,7 @@ Conventional Commits are still used, but they are only the **input convention** 
   - update `pyproject.toml`
   - create the release commit and tag
   - publish the GitHub Release
-- if `PYPI_TOKEN` is defined in repository secrets, the workflow also publishes to PyPI
+- if `PYPI_TOKEN` is defined in repository secrets, the workflow also publishes `dist/*` to PyPI via `twine upload`
 - if `PYPI_TOKEN` is not defined but `PYPI_MASTER_TOKEN` exists, the workflow falls back to that token for PyPI publication
 
 ### Commit conventions

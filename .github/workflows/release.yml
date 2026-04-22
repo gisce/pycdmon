@@ -41,8 +41,13 @@ jobs:
         run: |
           export PYPI_TOKEN="${PYPI_TOKEN:-${PYPI_MASTER_TOKEN:-}}"
           semantic-release version
-          if [ -n "${PYPI_TOKEN}" ]; then
+          if compgen -G "dist/*" > /dev/null; then
             semantic-release publish
+            if [ -n "${PYPI_TOKEN}" ]; then
+              twine upload --non-interactive -u __token__ -p "${PYPI_TOKEN}" dist/*
+            else
+              echo "No PyPI token configured; skipping PyPI publish"
+            fi
           else
-            echo "No PyPI token configured; skipping PyPI publish"
+            echo "No distributions found in dist/; skipping publish steps"
           fi
